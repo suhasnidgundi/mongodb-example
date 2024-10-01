@@ -7,7 +7,11 @@ export const metadata = {
 };
 
 export default async function SubmittedForms() {
-  let submittedForms = await fetch('http://localhost:3000/api/form', { cache: 'no-store' });
+  const baseUrl = process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://mongodb-example-alpha.vercel.app';
+
+  let submittedForms = await fetch(`${baseUrl}/api/form`, { cache: 'no-store' });
   let forms = await submittedForms.json();
 
   return (
