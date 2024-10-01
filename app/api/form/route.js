@@ -28,8 +28,10 @@ export async function GET(request) {
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
 
+        console.log("ID : ", id);
+
         if (id) {
-            const student = await collection.findOne({ _id: new ObjectId(id) });
+            const student = await collection.findOne({ _id: id });
             if (!student) {
                 return NextResponse.json({ message: 'Student not found' }, { status: 404 });
             }
@@ -58,7 +60,7 @@ export async function PUT(request) {
 
         const body = await request.json();
         const result = await collection.updateOne(
-            { _id: new ObjectId(id) },
+            { _id: id },
             { $set: body }
         );
 
@@ -85,7 +87,7 @@ export async function DELETE(request) {
             return NextResponse.json({ message: 'ID is required for deletion' }, { status: 400 });
         }
 
-        const result = await collection.deleteOne({ _id: new ObjectId(id) });
+        const result = await collection.deleteOne({ _id: id });
 
         if (result.deletedCount === 0) {
             return NextResponse.json({ message: 'Student not found' }, { status: 404 });

@@ -17,4 +17,9 @@ export const renderItem = (item) => (
 );
 
 // Function to extract a unique key for each item
-export const keyExtractor = (item) => item.id;
+export const keyExtractor = (item) => {
+    if (item._id) return item._id;
+    if (item.id) return item.id;
+    console.error('Item has no _id or id field:', item);
+    return JSON.stringify(item); // Fallback, but this should never happen
+};

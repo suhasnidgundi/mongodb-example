@@ -6,7 +6,7 @@ import Header from "@/components/Header/Header";
 import BootstrapClient from "@/libs/bootstrapClient";
 import "@/utils/color-modes";
 import ColorModeScript from "@/libs/ColorModeScript";
-import Footer from "@/components/Footer/Footer";
+import Footer, { socialLinks } from "@/components/Footer/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +31,12 @@ export default function RootLayout({ children }) {
         <div className="container">
           <Header />
           {children}
-          <Footer />
+          <Footer companyName="Suveesoft"
+            year={2024}
+            links={{
+              companyUrl: 'https://suveesoft.in/',
+              socialLinks: socialLinks
+            }} />
         </div>
         <BootstrapClient />
         <ColorModeScript />

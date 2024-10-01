@@ -1,18 +1,25 @@
+"use client"
+
+import { useState, useEffect } from 'react';
 import CardList from '@/components/CardList/CardList';
 import { keyExtractor, renderItem } from '@/components/CardList/CardListDemoData';
 
-export const metadata = {
-  title: "List Of Submitted Forms",
-  description: "View all submitted forms in an accordion layout",
-};
+export default function SubmittedForms() {
+  const [forms, setForms] = useState([]);
 
-export default async function SubmittedForms() {
-  const baseUrl = process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : 'https://mongodb-example-alpha.vercel.app';
+  const fetchForms = async () => {
+    const baseUrl = process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : 'https://mongodb-example-alpha.vercel.app';
 
-  let submittedForms = await fetch(`${baseUrl}/api/form`, { cache: 'no-store' });
-  let forms = await submittedForms.json();
+    let submittedForms = await fetch(`${baseUrl}/api/form`, { cache: 'no-store' });
+    let data = await submittedForms.json();
+    setForms(data);
+  };
+
+  useEffect(() => {
+    fetchForms();
+  }, []);
 
   return (
     <div className="container mt-4">
@@ -21,6 +28,8 @@ export default async function SubmittedForms() {
         items={forms}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        onUpdate={fetchForms}
+        onDelete={fetchForms}
       />
     </div>
   );

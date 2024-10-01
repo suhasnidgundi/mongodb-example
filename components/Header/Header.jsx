@@ -8,10 +8,10 @@ export const navItems = [
 
 const Header = () => {
     return (
-        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-            <Link href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-                {/* <i class="bi bi-instagram"></i> */}
-                <span class="fs-4">MongoDB Example</span>
+        <header className="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <Link href="/" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                {/* <i className="bi bi-instagram"></i> */}
+                <span className="fs-4">MongoDB Example</span>
             </Link>
             <ul className="nav nav-pills">
                 {navItems?.map((item) => (
