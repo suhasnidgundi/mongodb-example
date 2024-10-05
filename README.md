@@ -1,7 +1,7 @@
 # MongoDB Example
 
 ## Description
-The MongoDB Example is a full-stack web application that allows users to manage inventory items. It provides a user-friendly interface for adding, editing, deleting, and viewing items in a database.
+The MongoDB Example is a full-stack web application that allows users to manage items. It provides a user-friendly interface for adding, editing, deleting, and viewing items in a database.
 
 ## Features
 - Create new items with name, description, category, price, and quantity
