@@ -1,3 +1,4 @@
+// components/StudentDetailsForm.jsx
 "use client";
 import { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -5,43 +6,38 @@ import { z } from 'zod';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 const studentSchema = z.object({
-  firstName: z.string().min(2, 'Too short').max(50, 'Too long'),
-  lastName: z.string().min(2, 'Too short').max(50, 'Too long'),
-  email: z.string().email('Invalid email'),
   dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be in YYYY-MM-DD format'),
   gender: z.enum(['male', 'female', 'other']),
   course: z.string().min(1, 'Required'),
   address: z.string().min(5, 'Too short').max(200, 'Too long'),
+  familyName: z.string().min(1, 'Required').max(100, 'Too long'),
 });
 
-const StudentDetailsForm = () => {
+const StudentDetailsForm = ({ kindeUserData, onSubmit }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
 
   const initialValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
     dateOfBirth: '',
     gender: '',
     course: '',
     address: '',
+    familyName: '',
   };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await fetch('/api/form', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+      // Create FormData object
+      const formData = new FormData();
+      Object.keys(values).forEach(key => {
+        formData.append(key, values[key]);
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
+      // Add hasSubmittedForm flag
+      formData.append('hasSubmittedForm', 'true');
+
+      await onSubmit(formData);
 
       setAlertMessage('Form submitted successfully!');
       setAlertType('success');
@@ -60,6 +56,24 @@ const StudentDetailsForm = () => {
     <div className="container mt-5">
       <h2 className="mb-4 text-center">Student Details Form</h2>
 
+      {/* Display Kinde user data */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">Your Information</h5>
+          <div className="row">
+            <div className="col-md-4">
+              <p className="mb-1"><strong>First Name:</strong> {kindeUserData.firstName}</p>
+            </div>
+            <div className="col-md-4">
+              <p className="mb-1"><strong>Last Name:</strong> {kindeUserData.lastName}</p>
+            </div>
+            <div className="col-md-4">
+              <p className="mb-1"><strong>Email:</strong> {kindeUserData.email}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {showAlert && (
         <div className={`alert alert-${alertType}`} role="alert">
           {alertMessage}
@@ -77,41 +91,13 @@ const StudentDetailsForm = () => {
               <div className="form-floating mb-3">
                 <Field
                   type="text"
-                  name="firstName"
-                  className={`form-control ${errors.firstName && touched.firstName ? 'is-invalid' : ''}`}
-                  id="firstName"
-                  placeholder="First Name"
+                  name="familyName"
+                  className={`form-control ${errors.familyName && touched.familyName ? 'is-invalid' : ''}`}
+                  id="familyName"
+                  placeholder="Family Name"
                 />
-                <label htmlFor="firstName">First Name</label>
-                <ErrorMessage name="firstName" component="div" className="invalid-feedback" />
-              </div>
-            </div>
-
-            <div className="col-md-6">
-              <div className="form-floating mb-3">
-                <Field
-                  type="text"
-                  name="lastName"
-                  className={`form-control ${errors.lastName && touched.lastName ? 'is-invalid' : ''}`}
-                  id="lastName"
-                  placeholder="Last Name"
-                />
-                <label htmlFor="lastName">Last Name</label>
-                <ErrorMessage name="lastName" component="div" className="invalid-feedback" />
-              </div>
-            </div>
-
-            <div className="col-md-6">
-              <div className="form-floating mb-3">
-                <Field
-                  type="email"
-                  name="email"
-                  className={`form-control ${errors.email && touched.email ? 'is-invalid' : ''}`}
-                  id="email"
-                  placeholder="Email"
-                />
-                <label htmlFor="email">Email</label>
-                <ErrorMessage name="email" component="div" className="invalid-feedback" />
+                <label htmlFor="familyName">Family Name</label>
+                <ErrorMessage name="familyName" component="div" className="invalid-feedback" />
               </div>
             </div>
 

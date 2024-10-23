@@ -1,98 +1,81 @@
 // app/api/form/route.js
-
-import { NextResponse } from 'next/server';
-import { ObjectId } from 'mongodb';
-import clientPromise from '@/libs/clientPromise';
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { NextResponse } from "next/server";
+import connectDB from "@/libs/mongodb";
+import { Student } from "@/models/Student";
 
 export async function POST(request) {
     try {
-        const client = await clientPromise;
-        const db = client.db("mongodb-example");
-        const collection = db.collection("studentDetails");
+        // Get the authenticated user
+        const { getUser } = getKindeServerSession();
+        const user = await getUser();
 
-        const body = await request.json();
-        const result = await collection.insertOne(body);
+        if (!user || !user.id) {
+            return NextResponse.json(
+                { error: "Unauthorized access" },
+                { status: 401 }
+            );
+        }
 
-        return NextResponse.json({ message: 'Student created successfully', id: result.insertedId }, { status: 201 });
+        // Connect to MongoDB
+        await connectDB();
+
+        // Parse the request body
+        const data = await request.json();
+
+        // Create new student document
+        const student = await Student.create({
+            ...data,
+            userId: user.id,
+            profileCompleted: true
+        });
+
+        return NextResponse.json(
+            { success: true, data: student },
+            { status: 201 }
+        );
     } catch (error) {
-        return NextResponse.json({ message: 'Error creating student', error: error.message }, { status: 500 });
+        console.error('Error in POST /api/form:', error);
+        return NextResponse.json(
+            { success: false, error: error.message },
+            { status: 500 }
+        );
     }
 }
 
+// Optionally add a GET handler if you need to fetch student data
 export async function GET(request) {
     try {
-        const client = await clientPromise;
-        const db = client.db("mongodb-example");
-        const collection = db.collection("studentDetails");
+        const { getUser } = getKindeServerSession();
+        const user = await getUser();
 
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
-
-        if (id) {
-            const student = await collection.findOne({ _id: new ObjectId(id) });
-            if (!student) {
-                return NextResponse.json({ message: 'Student not found' }, { status: 404 });
-            }
-            return NextResponse.json(student);
-        } else {
-            const students = await collection.find({}).toArray();
-            return NextResponse.json(students);
-        }
-    } catch (error) {
-        return NextResponse.json({ message: 'Error retrieving student(s)', error: error.message }, { status: 500 });
-    }
-}
-
-export async function PUT(request) {
-    try {
-        const client = await clientPromise;
-        const db = client.db("mongodb-example");
-        const collection = db.collection("studentDetails");
-
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
-
-        if (!id) {
-            return NextResponse.json({ message: 'ID is required for updating' }, { status: 400 });
+        if (!user || !user.id) {
+            return NextResponse.json(
+                { error: "Unauthorized access" },
+                { status: 401 }
+            );
         }
 
-        const body = await request.json();
-        const result = await collection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: body }
+        await connectDB();
+
+        const student = await Student.findOne({ userId: user.id });
+
+        if (!student) {
+            return NextResponse.json(
+                { success: false, error: "Student not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { success: true, data: student },
+            { status: 200 }
         );
-
-        if (result.matchedCount === 0) {
-            return NextResponse.json({ message: 'Student not found' }, { status: 404 });
-        }
-
-        return NextResponse.json({ message: 'Student updated successfully' });
     } catch (error) {
-        return NextResponse.json({ message: 'Error updating student', error: error.message }, { status: 500 });
-    }
-}
-
-export async function DELETE(request) {
-    try {
-        const client = await clientPromise;
-        const db = client.db("mongodb-example");
-        const collection = db.collection("studentDetails");
-
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
-
-        if (!id) {
-            return NextResponse.json({ message: 'ID is required for deletion' }, { status: 400 });
-        }
-
-        const result = await collection.deleteOne({ _id: new ObjectId(id) });
-
-        if (result.deletedCount === 0) {
-            return NextResponse.json({ message: 'Student not found' }, { status: 404 });
-        }
-
-        return NextResponse.json({ message: 'Student deleted successfully' });
-    } catch (error) {
-        return NextResponse.json({ message: 'Error deleting student', error: error.message }, { status: 500 });
+        console.error('Error in GET /api/form:', error);
+        return NextResponse.json(
+            { success: false, error: error.message },
+            { status: 500 }
+        );
     }
 }

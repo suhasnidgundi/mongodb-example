@@ -7,6 +7,7 @@ import BootstrapClient from "@/libs/bootstrapClient";
 import "@/utils/color-modes";
 import ColorModeScript from "@/libs/ColorModeScript";
 import Footer, { socialLinks } from "@/components/Footer/Footer";
+import KindeClient from "@/libs/KindeClient";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,18 +29,20 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <div className="container">
-          <Header />
-          {children}
-          <Footer companyName="Suveesoft"
-            year={2024}
-            links={{
-              companyUrl: 'https://suveesoft.in/',
-              socialLinks: socialLinks
-            }} />
-        </div>
-        <BootstrapClient />
-        <ColorModeScript />
+        <KindeClient>
+          <div className="container">
+            <Header />
+            {children}
+            <Footer companyName="Suveesoft"
+              year={2024}
+              links={{
+                companyUrl: 'https://suveesoft.in/',
+                socialLinks: socialLinks
+              }} />
+          </div>
+          <BootstrapClient />
+          <ColorModeScript />
+        </KindeClient>
       </body>
     </html>
   );
