@@ -14,7 +14,7 @@
     "bootstrap-icons": "^1.11.3",
     "formik": "^2.4.6",
     "mongoose": "^8.7.2",
-    "next": "14.2.13",
+    "next": "14.2.21",
     "react": "^18",
     "react-dom": "^18",
     "zod": "^3.23.8",
